@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -70,7 +69,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, OnFi
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        filePicker.onActivityResult(requestCode, resultCode, data);
+        filePicker.onActivityResult(this, requestCode, resultCode, data);
     }
 
 

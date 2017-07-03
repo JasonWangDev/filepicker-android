@@ -13,8 +13,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         FragmentManager fm = getSupportFragmentManager();
+        MainFragment fragment = (MainFragment) fm.findFragmentByTag("MainFragment");
+        if (null == fragment)
+            fragment = new MainFragment();
         FragmentTransaction ft = fm.beginTransaction();
-        ft.replace(R.id.layout, new MainFragment());
+        ft.replace(R.id.layout, fragment, "MainFragment");
         ft.commit();
     }
 

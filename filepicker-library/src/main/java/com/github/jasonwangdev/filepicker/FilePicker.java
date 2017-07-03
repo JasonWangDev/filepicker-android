@@ -78,7 +78,9 @@ public class FilePicker {
         showPicker();
     }
 
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(Fragment fragment, int requestCode, int resultCode, Intent data) {
+        this.fragment = fragment;
+
         if (REQUEST_PICKER != requestCode)
             return;
 

@@ -5,7 +5,10 @@
       <module fileurl="file://$PROJECT_DIR$/FilePicker Demo.iml" filepath="$PROJECT_DIR$/FilePicker Demo.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/filepicker-android.iml" filepath="$PROJECT_DIR$/filepicker-android.iml" />
+      <module fileurl="file://$PROJECT_DIR$/filepicker-android.iml" filepath="$PROJECT_DIR$/filepicker-android.iml" />
+      <module fileurl="file://$PROJECT_DIR$/filepicker-library/filepicker-library.iml" filepath="$PROJECT_DIR$/filepicker-library/filepicker-library.iml" />
       <module fileurl="file://$PROJECT_DIR$/filepicker-library/filepicker-library.iml" filepath="$PROJECT_DIR$/filepicker-library/filepicker-library.iml" />
       <module fileurl="file://$PROJECT_DIR$/filepicker-library/filepicker-library.iml" filepath="$PROJECT_DIR$/filepicker-library/filepicker-library.iml" />
     </modules>
