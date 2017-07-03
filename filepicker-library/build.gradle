@@ -13,8 +13,8 @@ ext {
     libraryName = 'FilePicker Android'
     libraryDescription = 'File Picker for Android'
 
-    siteUrl = 'https://github.com/JasonWangDev/capture-android'
-    gitUrl = 'https://github.com/JasonWangDev/capture-android.git'
+    siteUrl = 'https://github.com/JasonWangDev/filepicker-android'
+    gitUrl = 'https://github.com/JasonWangDev/filepicker-android.git'
 
     developerId = 'jason'
     developerName = 'Jason Wang'
