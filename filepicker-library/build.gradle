@@ -8,7 +8,7 @@ ext {
 
     publishedGroupId = 'com.github.jasonwangdev'                         // Sonatpy Group Name
     artifact = 'filepicker-library'                                      // Module Name
-    libraryVersion = '1.0.0'                                             // Library Version
+    libraryVersion = '1.0.1'                                             // Library Version
 
     libraryName = 'FilePicker Android'
     libraryDescription = 'File Picker for Android'
