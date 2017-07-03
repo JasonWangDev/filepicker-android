@@ -9,6 +9,7 @@ import java.util.List;
 
 public interface OnFilePickerListener {
 
+    void onFilePickerError(Error error);
     void onFileChoose(List<File> files);
 
 }

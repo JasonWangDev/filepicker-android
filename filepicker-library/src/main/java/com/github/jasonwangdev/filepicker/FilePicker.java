@@ -1,16 +1,23 @@
 package com.github.jasonwangdev.filepicker;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.ClipData;
+import android.content.ContentUris;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
+import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
-import android.util.Log;
+
+import com.github.jasonwangdev.filepicker.utils.PermissionResult;
+import com.github.jasonwangdev.filepicker.utils.PermissionUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -28,6 +35,8 @@ import java.util.List;
 
 public class FilePicker {
 
+    private static final String STORAGE_PERMISSIONS = Manifest.permission.WRITE_EXTERNAL_STORAGE;
+
     private static final String MIME_TYPE = "*/*";
 
     private static final int REQUEST_PICKER = 0xF0;
@@ -40,22 +49,33 @@ public class FilePicker {
     public void showPicker(Fragment fragment) {
         this.fragment = fragment;
 
-        PackageManager pm = fragment.getContext().getPackageManager();
-
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType(MIME_TYPE);
-        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-        intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
-
-        List<ResolveInfo> resolveInfos = pm.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
-        if (resolveInfos.size() > 0)
-            fragment.startActivityForResult(intent, REQUEST_PICKER);
+        if (!PermissionUtils.checkPermission(fragment, STORAGE_PERMISSIONS))
+            PermissionUtils.requestPermission(fragment, STORAGE_PERMISSIONS);
         else
-            Log.d("TAG", "NO APPs");
+            showPicker();
     }
 
     public void setOnFilePickerListener(OnFilePickerListener onFilePickerListener) {
         this.onFilePickerListener = onFilePickerListener;
+    }
+
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        List<PermissionResult> permissionResults = PermissionUtils.getPermissionResults(fragment, requestCode, permissions, grantResults);
+        for(PermissionResult permissionResult : permissionResults)
+        {
+            if (!permissionResult.isGrant())
+            {
+                if (STORAGE_PERMISSIONS.equals(permissionResult.getPermission()))
+                {
+                    if (null != onFilePickerListener)
+                        onFilePickerListener.onFilePickerError(permissionResult.isChoseNeverAskAgain() ? Error.STORAGE_PERMISSION_NEVER_DENIED : Error.STORAGE_PERMISSION_DENIED);
+
+                    return;
+                }
+            }
+        }
+
+        showPicker();
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -72,6 +92,24 @@ public class FilePicker {
             onFilePickerListener.onFileChoose(files);
     }
 
+
+    private void showPicker() {
+        PackageManager pm = fragment.getContext().getPackageManager();
+
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType(MIME_TYPE);
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
+
+        List<ResolveInfo> resolveInfos = pm.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+        if (resolveInfos.size() > 0)
+            fragment.startActivityForResult(intent, REQUEST_PICKER);
+        else
+        {
+            if (null != onFilePickerListener)
+                onFilePickerListener.onFilePickerError(Error.APP_NOT_SUPPORT);
+        }
+    }
 
     private List<Uri> getUris(Intent data) {
         // 單選
@@ -100,10 +138,59 @@ public class FilePicker {
             return getFilesApiBelow19(uris);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private List<File> getFilesApiAbove19(List<Uri> uris) {
         List<File> files = new ArrayList<>();
 
-        // TODO:
+        if (null != uris)
+        {
+            for (Uri uri : uris)
+            {
+                if (DocumentsContract.isDocumentUri(fragment.getContext(), uri))
+                {
+                    String path = null;
+                    String authority = uri.getAuthority();
+                    if ("com.android.externalstorage.documents".equals(authority))
+                    {
+                        String id = DocumentsContract.getDocumentId(uri);
+                        String[] divide = id.split(":");
+                        String type = divide[0];
+                        if ("primary".equals(type))
+                            path = Environment.getExternalStorageDirectory().getAbsolutePath().concat("/").concat(divide[1]);
+                        else
+                            path = "/storage/".concat(type).concat("/").concat(divide[1]);
+                    }
+                    else if ("com.android.providers.downloads.documents".equals(authority))
+                    {
+                        String id = DocumentsContract.getDocumentId(uri);
+                        Uri _uri = ContentUris.withAppendedId(Uri.parse("content://downloads/public_downloads"),
+                                                             Long.parseLong(id));
+
+                        path = getPath(_uri);
+                    }
+                    else if ("com.android.providers.media.documents".equals(authority))
+                    {
+                        String id = DocumentsContract.getDocumentId(uri);
+                        String[] divide = id.split(":");
+                        String type = divide[0];
+                        Uri _uri = null;
+                        if ("image".equals(type))
+                            _uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+                        else if ("video".equals(type))
+                            _uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+                        else if ("audio".equals(type))
+                            _uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+                        _uri = ContentUris.withAppendedId(_uri, Long.parseLong(divide[1]));
+
+                        path = getPath(_uri);
+                    }
+
+                    File file = createFile(path);
+                    if (null != file)
+                        files.add(file);
+                }
+            }
+        }
 
         return files;
     }
