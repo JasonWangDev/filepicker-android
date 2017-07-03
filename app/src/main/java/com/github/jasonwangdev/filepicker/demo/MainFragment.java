@@ -1,22 +1,23 @@
 package com.github.jasonwangdev.filepicker.demo;
 
 import android.content.Intent;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.github.jasonwangdev.filepicker.Error;
 import com.github.jasonwangdev.filepicker.FilePicker;
 import com.github.jasonwangdev.filepicker.OnFilePickerListener;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,12 +26,18 @@ import java.util.List;
 
 public class MainFragment extends Fragment implements View.OnClickListener, OnFilePickerListener {
 
+    List<File> fileList;
+    ThumbnailAdapter adapter;
+
     FilePicker filePicker;
 
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        fileList = new ArrayList<>();
+        adapter = new ThumbnailAdapter(fileList);
 
         filePicker = new FilePicker();
         filePicker.setOnFilePickerListener(this);
@@ -42,6 +49,12 @@ public class MainFragment extends Fragment implements View.OnClickListener, OnFi
         View view = inflater.inflate(R.layout.fragment_main, container, false);
 
         view.findViewById(R.id.button_picker).setOnClickListener(this);
+
+        LinearLayoutManager llm = new LinearLayoutManager(getContext());
+        llm.setOrientation(LinearLayoutManager.HORIZONTAL);
+
+        ((RecyclerView) view.findViewById(R.id.lv)).setLayoutManager(llm);
+        ((RecyclerView) view.findViewById(R.id.lv)).setAdapter(adapter);
 
         return view;
     }
@@ -68,16 +81,15 @@ public class MainFragment extends Fragment implements View.OnClickListener, OnFi
 
     @Override
     public void onFilePickerError(Error error) {
-        Log.d("TAG", error.toString());
+        Toast.makeText(getContext(), error.toString(), Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onFileChoose(List<File> files) {
-        for (File file : files)
-        {
+        fileList.clear();
+        fileList.addAll(files);
 
-            break;
-        }
+        adapter.notifyDataSetChanged();
     }
 
 }
