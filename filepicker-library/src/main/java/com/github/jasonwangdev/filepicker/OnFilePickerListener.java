@@ -1,6 +1,7 @@
 package com.github.jasonwangdev.filepicker;
 
 import java.io.File;
+import java.util.List;
 
 /**
  * Created by Jason on 2017/7/3.
@@ -8,6 +9,6 @@ import java.io.File;
 
 public interface OnFilePickerListener {
 
-    void onFileChoose(File file);
+    void onFileChoose(List<File> files);
 
 }

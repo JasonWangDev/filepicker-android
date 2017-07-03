@@ -15,6 +15,7 @@ import com.github.jasonwangdev.filepicker.FilePicker;
 import com.github.jasonwangdev.filepicker.OnFilePickerListener;
 
 import java.io.File;
+import java.util.List;
 
 /**
  * Created by Jason on 2017/7/3.
@@ -57,9 +58,9 @@ public class MainFragment extends Fragment implements View.OnClickListener, OnFi
     }
 
     @Override
-    public void onFileChoose(File file) {
-        Log.d("TAG", "onFileChoose");
-        ((ImageView) getView().findViewById(R.id.iv)).setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath()));
+    public void onFileChoose(List<File> files) {
+//        Log.d("TAG", "onFileChoose");
+//        ((ImageView) getView().findViewById(R.id.iv)).setImageBitmap(BitmapFactory.decodeFile(file.getAbsolutePath()));
     }
 
 }
