@@ -75,7 +75,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, OnFi
 
     @Override
     public void onClick(View v) {
-        filePicker.showPicker(this);
+        filePicker.showMediaPicker(this);
     }
 
     @Override

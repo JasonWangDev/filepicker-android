@@ -37,7 +37,9 @@ public class FilePicker {
 
     private static final String STORAGE_PERMISSIONS = Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
-    private static final String MIME_TYPE = "*/*";
+    private static final String ALL_MIME = "*/*";
+    private static final String IMAGE_MIME = "image/*";
+    private static final String VIDEO_MIME = "video/*";
 
     private static final int REQUEST_PICKER = 0xF0;
 
@@ -46,13 +48,13 @@ public class FilePicker {
     private Fragment fragment;
 
 
-    public void showPicker(Fragment fragment) {
+    public void showMediaPicker(Fragment fragment) {
         this.fragment = fragment;
 
         if (!PermissionUtils.checkPermission(fragment, STORAGE_PERMISSIONS))
             PermissionUtils.requestPermission(fragment, STORAGE_PERMISSIONS);
         else
-            showPicker();
+            showMediaPicker();
     }
 
     public void setOnFilePickerListener(OnFilePickerListener onFilePickerListener) {
@@ -75,7 +77,7 @@ public class FilePicker {
             }
         }
 
-        showPicker();
+        showMediaPicker();
     }
 
     public void onActivityResult(Fragment fragment, int requestCode, int resultCode, Intent data) {
@@ -95,13 +97,22 @@ public class FilePicker {
     }
 
 
-    private void showPicker() {
+    private void showMediaPicker() {
         PackageManager pm = fragment.getContext().getPackageManager();
 
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType(MIME_TYPE);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
         intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+        {
+            intent.setType(ALL_MIME);
+            String[] mimeTypes = {IMAGE_MIME, VIDEO_MIME};
+            intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
+        }
+        else
+            intent.setType(IMAGE_MIME + ", " + VIDEO_MIME);
 
         List<ResolveInfo> resolveInfos = pm.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
         if (resolveInfos.size() > 0)
